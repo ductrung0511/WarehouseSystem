@@ -31,8 +31,7 @@ public class WarehouseService {
         return productDAO.getProductsByCategory(category);
     }
     
-    public boolean addProduct(String name, String category, int quantity, double price, Date expiryDate, int supplierId) {
-        Product product = new Product(0, name, category, quantity, price, expiryDate, supplierId);
+    public boolean addProduct(Product product) {
         return productDAO.addProduct(product);
     }
     
@@ -50,18 +49,14 @@ public class WarehouseService {
     }
     
     public boolean addProductToWarehouse(int warehouseId, int productId, int quantity) {
-        // Check if warehouse has capacity
+        // Pure business logic - check warehouse capacity
         Warehouse warehouse = warehouseDAO.getWarehouseById(warehouseId);
+
         if (warehouse != null) {
             int currentStock = warehouse.getCurrentStock();
             int capacity = warehouse.getCapacity();
-            
-            if (currentStock + quantity <= capacity) {
-                return warehouseDAO.addProductToWarehouse(warehouseId, productId, quantity);
-            } else {
-                System.err.println("❌ Cannot add product: Warehouse capacity exceeded");
-                return false;
-            }
+            return (currentStock + quantity <= capacity) && 
+                   warehouseDAO.addProductToWarehouse(warehouseId, productId, quantity);
         }
         return false;
     }
@@ -70,13 +65,16 @@ public class WarehouseService {
         return warehouseDAO.getProductsInWarehouse(warehouseId);
     }
     
+    public Warehouse getWarehouseById(int warehouseId) {
+        return warehouseDAO.getWarehouseById(warehouseId);
+    }
+    
     // ===== EMPLOYEE SERVICES =====
     public List<Employee> getAllEmployees() {
         return employeeDAO.getAllEmployees();
     }
     
-    public boolean addEmployee(String name, String position, String shift, double salary) {
-        Employee employee = new Employee(0, name, "", "", position, shift, salary);
+    public boolean addEmployee(Employee employee) {
         return employeeDAO.addEmployee(employee);
     }
     
@@ -85,8 +83,7 @@ public class WarehouseService {
         return customerDAO.getAllCustomers();
     }
     
-    public boolean addCustomer(String name, String contactInfo, String address) {
-        Customer customer = new Customer(0, name, contactInfo, address);
+    public boolean addCustomer(Customer customer) {
         return customerDAO.addCustomer(customer);
     }
     
@@ -95,19 +92,7 @@ public class WarehouseService {
         return orderDAO.getAllOrders();
     }
     
-    public boolean createOrder(int customerId, List<Product> products, List<Integer> quantities) {
-        if (products.size() != quantities.size()) {
-            System.err.println("❌ Products and quantities lists must be the same size");
-            return false;
-        }
-        
-        Order order = new Order(0, customerId, new Date());
-        
-        // Add items to order
-        for (int i = 0; i < products.size(); i++) {
-            order.addItem(products.get(i), quantities.get(i));
-        }
-        
+    public boolean createOrder(Order order) {
         return orderDAO.createOrder(order);
     }
     
@@ -121,7 +106,6 @@ public class WarehouseService {
     }
     
     // ===== BUSINESS LOGIC METHODS =====
-    
     public String generateInventoryReport() {
         StringBuilder report = new StringBuilder();
         report.append("=== INVENTORY REPORT ===\n");
@@ -129,12 +113,8 @@ public class WarehouseService {
         List<Product> products = getAllProducts();
         report.append("Total Products: ").append(products.size()).append("\n\n");
         
-        // Products by category
-        report.append("Products by Category:\n");
-        // You could group by category here
-        
         // Low stock alert
-        report.append("\nLow Stock Alert:\n");
+        report.append("Low Stock Alert:\n");
         for (Product product : products) {
             if (product.getQuantity() < 10) {
                 report.append("⚠️ ").append(product.getName())
@@ -162,29 +142,18 @@ public class WarehouseService {
         return report.toString();
     }
     
-    public boolean processSale(int customerId, int productId, int quantity) {
-        Product product = getProductById(productId);
-        if (product == null) {
-            System.err.println("❌ Product not found");
-            return false;
-        }
-        
-        if (product.getQuantity() < quantity) {
-            System.err.println("❌ Insufficient stock. Available: " + product.getQuantity());
-            return false;
-        }
-        
-        // Create order with single product
-        Order order = new Order(0, customerId, new Date());
-        order.addItem(product, quantity);
-        
+    public boolean processSale(Order order) {
         boolean orderCreated = orderDAO.createOrder(order);
         if (orderCreated) {
-            // Update stock
-            int newQuantity = product.getQuantity() - quantity;
-            return updateProductStock(productId, newQuantity);
+            // Update stock for each product in the order
+            for (var entry : order.getProductList().entrySet()) {
+                Product product = entry.getKey();
+                int quantitySold = entry.getValue();
+                int newQuantity = product.getQuantity() - quantitySold;
+                productDAO.updateProductStock(product.getProductId(), newQuantity);
+            }
+            return true;
         }
-        
         return false;
     }
 }

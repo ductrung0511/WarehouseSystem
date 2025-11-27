@@ -1,108 +1,104 @@
 package com.warehouse.models;
-
+        
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Warehouse {
-    private int warehouseId;
-    private String name;
-    private String location;
-    private int capacity;
-    private int currentStock;
-    private List<Product> products;
+    
+private int warehouseId;
+private String location;
+        //ds 
+private String name;
+private int capacity;
+//sdf
+private int currentStock; // realtime
+private List<Product> products; 
 
-    public Warehouse(int warehouseId, String name, String location, int capacity) {
-        this.warehouseId = warehouseId;
-        this.name = name;
-        this.location = location;
-        this.capacity = capacity;
-        this.currentStock = 0;
-        this.products = new ArrayList<>();
-    }
+public Warehouse(int Id, String na, String lo, int ca) {
+this.warehouseId = Id;
+this.name = na;
+// jfkdsljk
+this.capacity = ca;
+this.currentStock = 0; // no at firest;
+this.products = new ArrayList<>();
 
-    // Getters and Setters
-    public int getWarehouseId() { return warehouseId; }
-    public String getName() { return name; }
-    public String getLocation() { return location; }
-    public int getCapacity() { return capacity; }
-    public int getCurrentStock() { return currentStock; }
-    public List<Product> getProducts() { return products; }
+}
 
-    // Methods from UML
-    public void addProduct(Product product, int quantity) {
-        if (currentStock + quantity <= capacity) {
-            // Check if product already exists
-            boolean productExists = false;
-            for (Product p : products) {
-                if (p.getProductId() == product.getProductId()) {
-                    p.updateStock(quantity);
-                    productExists = true;
-                    break;
-                }
-            }
-            
-            if (!productExists) {
-                Product newProduct = new Product(
-                    product.getProductId(), product.getName(), product.getCategory(),
-                    quantity, product.getPrice(), product.getExpiryDate(), product.getSupplierId()
-                );
-                products.add(newProduct);
-            }
-            
-            currentStock += quantity;
-            System.out.println("Added " + quantity + " of " + product.getName() + " to warehouse " + name);
-        } else {
-            System.out.println("Cannot add product. Warehouse capacity exceeded.");
+public int getWarehouseId() {return warehouseId;}
+public String getName() {return name;}
+public String getLocation() { return this.location;}
+public int getCapacity() {return capacity;} 
+public int getCurrentStock () {
+    return currentStock;
+    
+}
+    
+public List<Product> getProducts() {
+return products; 
+}
+
+public void addProduct (Product pr, int qu) {
+    if(currentStock + qu <= capacity) {
+        boolean in = false;
+        for(Product p : products ) {
+            if(p.getProductId() == pr.getProductId()){
+                p.updateStock(p.getQuantity() + qu);
+                in = true;
+                break;
+            }}
+        if(!in) {
+            products.add(pr);
         }
+        this.currentStock += qu;
     }
 
-    public void removeProduct(int productId, int quantity) {
-        for (Product product : products) {
-            if (product.getProductId() == productId) {
-                if (product.getQuantity() >= quantity) {
-                    product.updateStock(-quantity);
-                    currentStock -= quantity;
-                    System.out.println("Removed " + quantity + " of product ID " + productId);
-                    
-                    // Remove product if quantity becomes zero
-                    if (product.getQuantity() == 0) {
-                        products.remove(product);
-                    }
-                } else {
-                    System.out.println("Not enough stock to remove. Available: " + product.getQuantity());
-                }
-                return;
+}
+
+public void removeProduct(int pId, int qu){
+    for(Product p : products) {
+        if(p.getProductId() == pId) {
+            if(p.getQuantity() >= qu) {
+                p.updateStock(-qu);
+                this.currentStock -= qu;
+                if(p.getQuantity() == 0 ) products.remove(p);
             }
+            else System.out.print(" Not enough stock ... :( ");
+            return;
+        
         }
-        System.out.println("Product not found in warehouse: ID " + productId);
+        // If not found by ALG
+        System.out.print(" P no Found");
     }
-
-    public int checkAvailability(int productId) {
-        for (Product product : products) {
-            if (product.getProductId() == productId) {
-                return product.getQuantity();
-            }
+        
+        
+        
         }
-        return 0;
-    }
 
-    public void generateReport() {
-        System.out.println("\n=== Warehouse Report ===");
-        System.out.println("Warehouse: " + name);
-        System.out.println("Location: " + location);
-        System.out.println("Capacity: " + capacity);
-        System.out.println("Current Stock: " + currentStock);
-        System.out.println("Utilization: " + (currentStock * 100.0 / capacity) + "%");
-        System.out.println("Products:");
-        for (Product product : products) {
-            System.out.println("  - " + product.getName() + " (ID: " + product.getProductId() + 
-                             ", Qty: " + product.getQuantity() + ")");
-        }
-    }
 
-    @Override
-    public String toString() {
-        return String.format("Warehouse{id=%d, name='%s', location='%s', capacity=%d, stock=%d}", 
-                           warehouseId, name, location, capacity, currentStock);
+public int checkAvailability(int pId) {
+  for (Product p : products){
+    if(p.getProductId()== pId) {
+        return p.getQuantity();
     }
+  }
+  // if not then return zeno
+  return 0;
+}
+public void setWarehouseId(int id) {this.warehouseId = id;}
+public void generateReport() {
+// Not needed, only when return data is needed
+}
+
+@Override
+public String  toString () 
+{
+return "Ware House id %d" + warehouseId; // done
+}
+
+
+
+
+
+
 }

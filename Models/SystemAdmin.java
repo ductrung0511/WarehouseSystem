@@ -1,5 +1,6 @@
 package com.warehouse.models;
-
+// Do we need this class - it seem redundant - maybe for now
+// will be deleted if not used in in DAO or Controller or View
 import java.util.Date;
 
 public class SystemAdmin extends Person {

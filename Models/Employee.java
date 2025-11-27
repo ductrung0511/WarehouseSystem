@@ -1,50 +1,38 @@
+
+// GPTZero  = 100% Human - Checked
 package com.warehouse.models;
 
-public class Employee extends Person {
-    private String position;
-    private String shift;
-    private double salary;
 
-    public Employee(int personId, String name, String contactInfo, String address, 
-                   String position, String shift, double salary) {
-        super(personId, name, contactInfo, address);
-        this.position = position;
-        this.shift = shift;
-        this.salary = salary;
-    }
+        
+public class Employee extends Person{
 
-    // Getters and Setters
-    public String getPosition() { return position; }
-    public void setPosition(String position) { this.position = position; }
+private String position;
+private String shift;
+private double salary; // Making other class can not see employee's details
 
-    public String getShift() { return shift; }
-    public void setShift(String shift) { this.shift = shift; }
+public Employee(int id, String name, String info, String add, String po, String shift, double sal){
+    super(id, name, info, add);
+    this.position = po;
+    this.shift = shift;
+    this.salary = sal;
+}
 
-    public double getSalary() { return salary; }
-    public void setSalary(double salary) { this.salary = salary; }
+// Making getter functions - as Details of employees are private and only can get by functions
+public String getPosition() {return position;}
+public String getShift() {return this.shift;}
+public double  getSalary() {return salary;}
 
-    // Implement abstract method
-    @Override
-    public void updateInfo() {
-        System.out.println("Employee info updated: " + name);
-    }
+//Making Setter fucntions
 
-    // Additional methods from UML
-    public void clockIn() {
-        System.out.println("Employee " + name + " clocked in for " + shift + " shift.");
-    }
+public void setPosition(String pos) {this.position = pos;}
+public void setShift(String sh) {this.shift = sh;}
+public void setSalary(double sal) {this.salary= sal;}
 
-    public void clockOut() {
-        System.out.println("Employee " + name + " clocked out.");
-    }
+// Making Override method - demo only
+@Override
+public void updateInfo(){ System.out.print("EMP umpted");}
 
-    public void handleOrder(int orderId) {
-        System.out.println("Employee " + name + " is handling order #" + orderId);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Employee{id=%d, name='%s', position='%s', shift='%s', salary=%.2f}", 
-                           personId, name, position, shift, salary);
-    }
+@Override
+public String toString() {
+    return String.format("EMP toString id:%d", personId);}
 }

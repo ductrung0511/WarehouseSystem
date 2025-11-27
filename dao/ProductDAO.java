@@ -1,205 +1,213 @@
-package com.warehouse.dao;
+package com.warehouse.dao ;
 
 import com.warehouse.models.Product;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.* ;
+import java.util.*;
 
 public class ProductDAO {
-    
-    // CREATE - Add new product to database
-    public boolean addProduct(Product product) {
-        String sql = "INSERT INTO products (name, category, quantity, price, expiry_date, supplier_id) VALUES (?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
-            pstmt.setString(1, product.getName());
-            pstmt.setString(2, product.getCategory());
-            pstmt.setInt(3, product.getQuantity());
-            pstmt.setDouble(4, product.getPrice());
-            
-            if (product.getExpiryDate() != null) {
-                pstmt.setDate(5, new java.sql.Date(product.getExpiryDate().getTime()));
-            } else {
-                pstmt.setNull(5, Types.DATE);
-            }
-            
-            pstmt.setInt(6, product.getSupplierId());
-            
-            int affectedRows = pstmt.executeUpdate();
-            
-            // Get the auto-generated product_id
-            if (affectedRows > 0) {
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        product.setProductId(generatedKeys.getInt(1));
-                    }
-                }
-                System.out.println("✅ Product added to database: " + product.getName());
-                return true;
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error adding product: " + e.getMessage());
-        }
-        return false;
+
+public boolean addProduct(Product p) {
+String sql = "insert into products (name, category, quantity, price, expiry_date, supplier_id) values (?,?,?,?,?,?)";
+
+    try(Connection c = DatabaseConfig.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql)){
+    ps.setString(1, p.getName());
+    ps.setString(2, p.getCategory());
+    ps.setInt(3, p.getQuantity());
+    ps.setDouble(4, p.getPrice());
+    if(p.getExpiryDate() != null) {
+    ps.setDate(5, new java.sql.Date(p.getExpiryDate().getTime()));
     }
+    else ps.setNull(5, Types.DATE);
     
-    // READ - Get product by ID
+    ps.setInt(6, p.getSupplierId());
+    int result = ps.executeUpdate();
+    if (result > 0) {
+         try (ResultSet gk = ps.getGeneratedKeys()) {
+                if(gk.next()){
+                p.setProductId(gk.getInt(1));
+                
+                }
+                return true;
+               }
+         
+        
+        
+        
+    }
+        
+    
+    }
+    catch (SQLException e){} // output ..
+        return false;
+    
+    
+    }
+
     public Product getProductById(int productId) {
-        String sql = "SELECT * FROM products WHERE product_id = ?";
-        Product product = null;
+        String sql = "select * from products where product_id = ? ";
+        Product p = null;
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(Connection c = DatabaseConfig.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql)){
+            ps.setInt(1, productId);
+            try(ResultSet rs = ps.executeQuery()) {
+                if(rs.next()){
+                p = extractPfromRs(rs);
+                
+                
+                }}
             
-            pstmt.setInt(1, productId);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    product = extractProductFromResultSet(rs);
-                }
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error getting product: " + e.getMessage());
         }
-        
-        return product;
-    }
-    
-    // READ - Get all products
-    public List<Product> getAllProducts() {
-        List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM products";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        catch (SQLException e ) {
             
-            while (rs.next()) {
-                Product product = extractProductFromResultSet(rs);
-                products.add(product);
             }
             
-        } catch (SQLException e) {
-            System.err.println("❌ Error getting all products: " + e.getMessage());
-        }
-        
-        return products;
+        return p;
     }
-    
-    // READ - Get products by category
-    public List<Product> getProductsByCategory(String category) {
-        List<Product> products = new ArrayList<>();
-        String sql = "SELECT * FROM products WHERE category = ?";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, category);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    Product product = extractProductFromResultSet(rs);
-                    products.add(product);
-                }
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error getting products by category: " + e.getMessage());
-        }
-        
-        return products;
-    }
-    
-    // UPDATE - Update product information
-    public boolean updateProduct(Product product) {
-        String sql = "UPDATE products SET name = ?, category = ?, quantity = ?, price = ?, expiry_date = ?, supplier_id = ? WHERE product_id = ?";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, product.getName());
-            pstmt.setString(2, product.getCategory());
-            pstmt.setInt(3, product.getQuantity());
-            pstmt.setDouble(4, product.getPrice());
-            
-            if (product.getExpiryDate() != null) {
-                pstmt.setDate(5, new java.sql.Date(product.getExpiryDate().getTime()));
-            } else {
-                pstmt.setNull(5, Types.DATE);
-            }
-            
-            pstmt.setInt(6, product.getSupplierId());
-            pstmt.setInt(7, product.getProductId());
-            
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("✅ Product updated: " + product.getName());
-                return true;
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error updating product: " + e.getMessage());
-        }
-        return false;
-    }
-    
-    // UPDATE - Update only product stock
-    public boolean updateProductStock(int productId, int newQuantity) {
-        String sql = "UPDATE products SET quantity = ? WHERE product_id = ?";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, newQuantity);
-            pstmt.setInt(2, productId);
-            
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("✅ Stock updated for product ID " + productId + ": " + newQuantity);
-                return true;
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error updating stock: " + e.getMessage());
-        }
-        return false;
-    }
-    
-    // DELETE - Remove product from database
-    public boolean deleteProduct(int productId) {
-        String sql = "DELETE FROM products WHERE product_id = ?";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, productId);
-            
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("✅ Product deleted: ID " + productId);
-                return true;
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error deleting product: " + e.getMessage());
-        }
-        return false;
-    }
-    
-    // Helper method to extract Product from ResultSet
-    private Product extractProductFromResultSet(ResultSet rs) throws SQLException {
+     // Helper function for tthe above function 
+
+    private Product extractPfromRs(ResultSet rs) throws SQLException  {
         return new Product(
             rs.getInt("product_id"),
             rs.getString("name"),
-            rs.getString("category"),
-            rs.getInt("quantity"),
-            rs.getDouble("price"),
-            rs.getDate("expiry_date"),
-            rs.getInt("supplier_id")
-        );
+                rs.getString("category"),
+        rs.getInt("quantity"),
+        rs.getDouble("price"),
+        rs.getDate("expiry_date"),
+        rs.getInt("supplier_id"));
     }
+    
+    // read all products;
+    public List<Product>  getAllProducts () {
+    List<Product> products = new ArrayList<>();
+    String sql = "select * from products";
+    
+    try(Connection c = DatabaseConfig.getConnection();
+            Statement st = c.createStatement();
+            ResultSet rs = st.executeQuery(sql)){
+    
+        while(rs.next()){
+            Product p= extractPfromRs(rs);
+            products.add(p);
+            
+        
+    }
+        } catch(SQLException e) {
+                
+                }
+    return products;
+    }
+    
+    // Read - get product with the same input category
+    public List<Product>  getProductsByCategory ( String cat) {
+    List<Product> products = new ArrayList<>();
+    String sql = "select * from products where category = ?";
+    try ( Connection c = DatabaseConfig.getConnection();
+            PreparedStatement ps = c.prepareStatement(sql)){
+        ps.setString(1, cat);
+        
+        try(ResultSet rs = ps.executeQuery()){
+            while(rs.next()){
+                Product p= extractPfromRs(rs);
+            products.add(p);
+            
+        
+        }
+              
+    }
+        } catch(SQLException e) {
+
+                    }
+        return products;  
+    
+    
+    }
+    
+    
+    // Update eproduct information
+    public boolean updateProduct(Product p){
+    
+        String sql = "update products set name = ?, category = ?, quantity=?, expiry_date = ?, supplier_id = ? where product_id = ?";
+        try(Connection c = DatabaseConfig.getConnection();
+        PreparedStatement ps = c.prepareStatement(sql);){
+        
+        ps.setString(1, p.getName());
+        ps.setString(2, p.getCategory());
+        ps.setInt(3, p.getQuantity());
+        ps.setDouble(4, p.getPrice());
+        
+        if(p.getExpiryDate() != null ){
+            ps.setDate(5, new java.sql.Date(p.getExpiryDate().getTime( ) ));
+            
+        }else{ps.setNull(5, Types.DATE);}
+        ps.setInt(6, p.getSupplierId());
+        ps.setInt(7, p.getProductId());
+        
+        int result = ps.executeUpdate();
+            if(result > 0) {
+                return true;
+                // Output st here 
+            }
+        }
+        catch (SQLException e ) {
+        // ERR output
+        System.err.println(e.getMessage());
+        }
+        return false; 
+            
+    }
+    
+        // Update eproduct information
+    public boolean updateProductStock(int pId, int newQ){
+    
+        String sql = "update products set  quantity=?  where product_id = ?";
+        try(Connection c = DatabaseConfig.getConnection();
+        PreparedStatement ps = c.prepareStatement(sql);){
+        
+        ps.setInt(1, newQ);
+        ps.setInt(2, pId);
+        
+        
+        int result = ps.executeUpdate();
+            if(result > 0) {
+                return true;
+                // Output st here 
+            }
+        }
+        catch (SQLException e ) {
+        // ERR output
+        System.err.println(e.getMessage());
+        }
+        return false; 
+            
+    }
+    
+        public boolean deleteProduct(int pId){
+    
+        String sql = "delete from products where    where product_id = ?";
+        try(Connection c = DatabaseConfig.getConnection();
+        PreparedStatement ps = c.prepareStatement(sql);){
+        
+        ps.setInt(1, pId);
+        
+        
+        int result = ps.executeUpdate();
+            if(result > 0) {
+                return true;
+                // Output st here 
+            }
+        }
+        catch (SQLException e ) {
+        // ERR output
+        System.err.println(e.getMessage());
+        }
+        return false; 
+            
+    }
+    
+    
+
 }
+
+

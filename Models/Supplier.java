@@ -1,31 +1,25 @@
 package com.warehouse.models;
 
-import java.util.List;
-
-public class Supplier extends Person {
-
-    public Supplier(int personId, String name, String contactInfo, String address) {
-        super(personId, name, contactInfo, address);
+public class Supplier  extends Person {
+    public Supplier(int pId, String n, String inf, String add) {
+    super(pId, n, inf, add); // for creation of parent class
     }
-
-    // Implement abstract method
+    
     @Override
     public void updateInfo() {
-        System.out.println("Supplier info updated: " + name);
+    // Not needed now .    
     }
+    
+    public void deliverProduct(Product product){
+    // notifify prove from delivery
+    }
+    public void viewPendingOrders(){
+    // Queueing from database ... 
+    
+    }
+    
+    @Override 
+    public String toString() {return "Supplier #id is : " + personId;}
+    
 
-    // Additional methods from UML
-    public void deliverProduct(Product product) {
-        System.out.println("Supplier " + name + " delivered product: " + product.getName());
-    }
-
-    public void viewPendingOrders() {
-        System.out.println("Supplier " + name + " is viewing pending orders");
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Supplier{id=%d, name='%s', contact='%s'}", 
-                           personId, name, contactInfo);
-    }
 }

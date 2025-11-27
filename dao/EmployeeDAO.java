@@ -1,145 +1,155 @@
+
+
 package com.warehouse.dao;
 
 import com.warehouse.models.Employee;
 import java.sql.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDAO {
+// Createnew employee; 
     
-    // CREATE - Add new employee
-    public boolean addEmployee(Employee employee) {
-        String sql = "INSERT INTO employees (name, position, shift, salary) VALUES (?, ?, ?, ?)";
+    public boolean addEmployee(Employee emp) {
+        String sql = "   insert into employees (name, position, shift, salary) VALUES ( ?, ? , ? , ? )";
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (
+                
+                Connection c = DatabaseConfig.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                
+                )
             
-            pstmt.setString(1, employee.getName());
-            pstmt.setString(2, employee.getPosition());
-            pstmt.setString(3, employee.getShift());
-            pstmt.setDouble(4, employee.getSalary());
+        {
+            ps.setString(1, emp.getName());
+            ps.setString(2, emp.getPosition());
+            ps.setString(3, emp.getShift());
+            ps.setDouble(4, emp.getSalary());
             
-            int affectedRows = pstmt.executeUpdate();
+            int returnRows = ps.executeUpdate();
             
-            if (affectedRows > 0) {
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        employee.setPersonId(generatedKeys.getInt(1));
-                    }
+            if(returnRows > 0 ) {
+                try(ResultSet gk = ps.getGeneratedKeys()){
+                    if (gk.next()){
+                        emp.setPersonId(gk.getInt(1));}
                 }
-                System.out.println("✅ Employee added: " + employee.getName());
                 return true;
             }
             
-        } catch (SQLException e) {
-            System.err.println("❌ Error adding employee: " + e.getMessage());
+        } catch(SQLException e) {
+         // Output error
         }
         return false;
     }
     
-    // READ - Get all employees
-    public List<Employee> getAllEmployees() {
+    public List<Employee> getAllEmployees(){
         List<Employee> employees = new ArrayList<>();
-        String sql = "SELECT * FROM employees";
+        String sql = "SELECT * from employees";
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            
-            while (rs.next()) {
-                Employee employee = new Employee(
+        try(Connection conn = DatabaseConfig.getConnection(); 
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql))
+        {
+            while(rs.next()) {
+                Employee emp = new Employee(
                     rs.getInt("employee_id"),
-                    rs.getString("name"),
-                    "", // contactInfo - you might want to add this to your table
-                    "", // address - you might want to add this to your table
+                      rs.getString("name"),
+                    "",
+                    "",
                     rs.getString("position"),
                     rs.getString("shift"),
-                    rs.getDouble("salary")
+                     rs.getDouble("salary")
                 );
-                employees.add(employee);
+                employees.add(emp);
             }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error getting employees: " + e.getMessage());
+        } 
+        catch(SQLException e){
+        System.err.println(" ERR in GETal emp");
         }
         
         return employees;
     }
     
-    // READ - Get employee by ID
-    public Employee getEmployeeById(int employeeId) {
-        String sql = "SELECT * FROM employees WHERE employee_id = ?";
+    // Read by Id of emp
+    public Employee getEmployeeById(int empId){
+        String sql = "Select * from employees where employee_id = ? ";
         Employee employee = null;
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, employeeId);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
+        try( Connection c = DatabaseConfig.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql)){
+                
+                ps.setInt(1, empId);
+                try(ResultSet rs = ps.executeQuery()) {
+                    if(rs.next()){
                     employee = new Employee(
                         rs.getInt("employee_id"),
                         rs.getString("name"),
-                        "", // contactInfo
+                        "",
                         "", // address
-                        rs.getString("position"),
-                        rs.getString("shift"),
-                        rs.getDouble("salary")
-                    );
+                           rs.getString("position"),
+                            rs.getString("shift"),
+                            rs.getDouble("salary")
+                            
+                            
+                        );
+                    }
                 }
             }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error getting employee: " + e.getMessage());
-        }
+        catch  (SQLException e) {System.err.println("SQL Error in get empt by id");}
         
         return employee;
+        
     }
     
-    // UPDATE - Update employee information
-    public boolean updateEmployee(Employee employee) {
-        String sql = "UPDATE employees SET name = ?, position = ?, shift = ?, salary = ? WHERE employee_id = ?";
-        
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, employee.getName());
-            pstmt.setString(2, employee.getPosition());
-            pstmt.setString(3, employee.getShift());
-            pstmt.setDouble(4, employee.getSalary());
-            pstmt.setInt(5, employee.getPersonId());
-            
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("✅ Employee updated: " + employee.getName());
-                return true;
-            }
-            
-        } catch (SQLException e) {
-            System.err.println("❌ Error updating employee: " + e.getMessage());
-        }
-        return false;
-    }
+    // Update the emp info from the input Object
     
-    // DELETE - Remove employee
-    public boolean deleteEmployee(int employeeId) {
-        String sql = "DELETE FROM employees WHERE employee_id = ?";
+    public boolean updateEmployee (Employee employee) {
         
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    
+        String sql = "update employees set name = ?, position = ?, shift = ?, salary = ? where employee_id = ? ";
+        try( Connection c = DatabaseConfig.getConnection();
+                PreparedStatement ps = c.prepareStatement(sql)){
+            ps.setString(1, employee.getName());
+            ps.setString(2, employee.getPosition()) ;
+            ps.setString(3, employee.getShift());
+            ps.setDouble(4, employee.getSalary());
+            ps.setInt(5, employee.getPersonId());
             
-            pstmt.setInt(1, employeeId);
-            
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                System.out.println("✅ Employee deleted: ID " + employeeId);
-                return true;
+            int result = ps.executeUpdate();
+            if(result > 0) {
+                return true; // Scucess
             }
             
-        } catch (SQLException e) {
-            System.err.println("❌ Error deleting employee: " + e.getMessage());
+        }
+        catch(SQLException e) {
+        
         }
         return false;
+        }
+    
+    
+        public boolean deleteEmployee(int empId) {
+            String sql = "delete from employees where employee_id = ?"; 
+            
+            try (Connection c = DatabaseConfig.getConnection();
+                    PreparedStatement ps = c.prepareStatement(sql)){
+                ps.setInt(1, empId);
+                int result = ps.executeUpdate();
+                if (result > 0) {
+                return true;
+                }
+                
+            
+            } 
+            catch (SQLException e) {
+            }
+                        return false;
+
+        }
     }
-}
+
+    
+    
+    
+

@@ -2,66 +2,59 @@ package com.warehouse.models;
 
 import java.util.Date;
 
-public class Product {
+public class Product 
+{
+
     private int productId;
     private String name;
     private String category;
-    private int quantity;
-    private double price;
-    private Date expiryDate;
     private int supplierId;
-
-    public Product(int productId, String name, String category, int quantity, 
-                  double price, Date expiryDate, int supplierId) {
-        this.productId = productId;
-        this.name = name;
-        this.category = category;
-        this.quantity = quantity;
+    private Date expiryDate;
+    private double price;
+    private int quantity;
+            
+    public Product(int pId, String n, String cat, int q, double price, Date eD, int sId){
+        this.productId = pId;
+        this.name = n;
+        this.category = cat;
+        this.quantity = q;
+        this.expiryDate = eD;
+        this.supplierId = sId;
         this.price = price;
-        this.expiryDate = expiryDate;
-        this.supplierId = supplierId;
     }
+    
+    // Getters Fucntions;
+    public int getProductId () {return productId;}
+    public String getName () {return name;}
+    public String getCategory() {return category; }
+    public int getQuantity() {return quantity;}
+    public double getPrice() {return price;}
+    public int getSupplierId(){return supplierId;}
+    public Date getExpiryDate() {return expiryDate;}
+    
+    // Setter's Functtions 
+    public void setName(String n) {this.name = n;}
+    public void setQuantity(int q) {this.quantity = q;}
+    public void setCategory(String cat) {this.category = cat;}
+    public void  setPrice(double p) {this.price = p; }
+    public  void setSupplierId( int sId) {this.supplierId = sId;}
+    public void setProductId( int id) {this.productId = id;}
+    
+  public void updateStock( int amt) {
+    this.quantity  = amt;
+  }
+  
+  public void updatePrice( double newPrice) {
+      this.price =  newPrice;
+  }
+  
+//  public void markAsExpired  Not needed 
+  
+  
+  @Override // why override ?
+  public String toString() {
+    return String.format("Product id = %d", productId );
+  }
 
-    // Getters and Setters
-    public int getProductId() { return productId; }
-    public void setProductId(int productId) { this.productId = productId; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
-
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
-
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
-
-    public Date getExpiryDate() { return expiryDate; }
-    public void setExpiryDate(Date expiryDate) { this.expiryDate = expiryDate; }
-
-    public int getSupplierId() { return supplierId; }
-    public void setSupplierId(int supplierId) { this.supplierId = supplierId; }
-
-    // Methods from UML
-    public void updateStock(int amount) {
-        this.quantity += amount;
-        System.out.println("Stock updated for " + name + ". New quantity: " + quantity);
-    }
-
-    public void updatePrice(double newPrice) {
-        this.price = newPrice;
-        System.out.println("Price updated for " + name + ". New price: " + newPrice);
-    }
-
-    public void markAsExpired() {
-        System.out.println("Product " + name + " has been marked as expired.");
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Product{id=%d, name='%s', category='%s', quantity=%d, price=%.2f}", 
-                           productId, name, category, quantity, price);
-    }
 }

@@ -1,37 +1,39 @@
 package com.warehouse.models;
-
+        
 public abstract class Person {
-    protected int personId;
-    protected String name;
-    protected String contactInfo;
-    protected String address;
 
-    public Person(int personId, String name, String contactInfo, String address) {
-        this.personId = personId;
-        this.name = name;
-        this.contactInfo = contactInfo;
-        this.address = address;
-    }
+protected int personId;
+protected String name;
+protected String contactInfo;
+protected String address;
 
-    // Getters and Setters
-    public int getPersonId() { return personId; }
-    public void setPersonId(int personId) { this.personId = personId; }
+public Person(int pId, String name, String info, String add){
+    this.personId = pId;
+    this.name = name;
+    this.contactInfo = info;
+    this.address = add;
+}
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 
-    public String getContactInfo() { return contactInfo; }
-    public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
+// Getter fucntions 
+public int getPersonId   () { return this.personId;}
+public String getName() {return name ;}
+public String getContactInfo() { 
+    return contactInfo;}
 
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
+public String getAddress() {return address;}
 
-    // Abstract method
-    public abstract void updateInfo();
 
-    @Override
-    public String toString() {
-        return String.format("Person{id=%d, name='%s', contact='%s'}", 
-                           personId, name, contactInfo);
-    }
+// Setters functions
+public void setPersonId(int pId) {this.personId = pId;}
+public void setname(String n) {this.name = n;}
+public void setContactInfo(String inf) {this.contactInfo = inf;}
+public void setAdress(String add) { this.address = add; }
+
+//Abstract methid
+public abstract void updateInfo();
+
+@Override
+public String toString() {
+    return String.format( "Person's id = %d", personId );}
 }

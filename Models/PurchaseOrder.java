@@ -1,61 +1,50 @@
-package com.warehouse.models;
-
+package  com.warehouse.models;
 import java.util.*;
 
-public class PurchaseOrder {
+public class  PurchaseOrder  
+{
     private int poId;
-    private int supplierId;
-    private List<Product> productList;
+    private int  supplierId; // Diff from Orders
+    
+    private Map<Product ,Integer>  productList ;
     private double totalCost;
     private Date orderDate;
-    private String status;
-
-    public PurchaseOrder(int poId, int supplierId, Date orderDate) {
-        this.poId = poId;
-        this.supplierId = supplierId;
-        this.orderDate = orderDate;
-        this.productList = new ArrayList<>();
-        this.totalCost = 0.0;
-        this.status = "Pending";
+    private String  status;
+    
+    public PurchaseOrder(int id, int sId, Date d){
+        this.poId = id;
+    this.supplierId = sId;
+    this.orderDate = d;
+    this.productList = new HashMap<>();
+    this.totalCost = 0.0;
+    this.status = "Draft";
+        System.out.println("Created new Purchase Order! - PoId: " + poId);
     }
-
-    // Getters and Setters
-    public int getPoId() { return poId; }
-    public int getSupplierId() { return supplierId; }
-    public List<Product> getProductList() { return productList; }
-    public double getTotalCost() { return totalCost; }
-    public Date getOrderDate() { return orderDate; }
-    public String getStatus() { return status; }
-
-    // Methods from UML
-    public void createPO() {
-        System.out.println("Purchase Order #" + poId + " created for supplier ID: " + supplierId);
+    
+    // Funcstions Getters --- 
+    public int  getPoId() {return poId; } // as poId is private
+    public int getSupplierId() {return supplierId;}
+    public Map<Product, Integer> getProductList() {return productList;}
+    public double  getTotalCost () { return totalCost;}
+    public Date getOrderDate() {return orderDate; }
+    public String getStatus() {return status;}
+    
+    public void cancelPO() { this.status = "Cancelled"; 
+    } // Do st else here ... ?
+    
+    public void updateStatus(String sta) {
+        this.status = sta;
     }
+    
+    public void addProduct (Product p, int q) {
+    productList.put(p, productList.getOrDefault(p, 0) + q );
+    this.totalCost += p.getPrice() * q;
+            }
+    
+    @Override 
+    public  String  toString() 
+    {
+    
+    return String.format("POid #%d, Sid #%d", poId, supplierId);}
 
-    public void approvePO() {
-        this.status = "Approved";
-        System.out.println("Purchase Order #" + poId + " approved.");
-    }
-
-    public void cancelPO() {
-        this.status = "Cancelled";
-        System.out.println("Purchase Order #" + poId + " cancelled.");
-    }
-
-    public void updateStatus(String status) {
-        this.status = status;
-        System.out.println("Purchase Order #" + poId + " status updated to: " + status);
-    }
-
-    // Helper method to add product
-    public void addProduct(Product product) {
-        productList.add(product);
-        totalCost += product.getPrice();
-    }
-
-    @Override
-    public String toString() {
-        return String.format("PurchaseOrder{id=%d, supplierId=%d, totalCost=%.2f, status='%s', items=%d}", 
-                           poId, supplierId, totalCost, status, productList.size());
-    }
 }

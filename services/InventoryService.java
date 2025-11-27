@@ -1,77 +1,72 @@
-package com.warehouse.services;
+package com.warehouse.services
+        ;
 
 import com.warehouse.dao.ProductDAO;
-import com.warehouse.dao.WarehouseDAO;
 import com.warehouse.models.Product;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class InventoryService {
-    private ProductDAO productDAO;
-    private WarehouseDAO warehouseDAO;
+    private  ProductDAO productDAO;
     
-    public InventoryService() {
-        this.productDAO = new ProductDAO();
-        this.warehouseDAO = new WarehouseDAO();
+    public InventoryService(){
+    
+    this.productDAO = new ProductDAO();
     }
     
-    public List<Product> getLowStockProducts(int threshold) {
-        List<Product> allProducts = productDAO.getAllProducts();
-        List<Product> lowStockProducts = new ArrayList<>();
-        
-        for (Product product : allProducts) {
-            if (product.getQuantity() <= threshold) {
-                lowStockProducts.add(product);
+    public List<Product> getLowStockProducts(int th){
+    
+            List <Product> allP = productDAO.getAllProducts();
+            List <Product> lowP = new ArrayList<>();
+
+            for(Product p: allP){
+                if(p.getQuantity() <= th){
+                    lowP.add(p);
+                }
             }
-        }
-        
-        return lowStockProducts;
+            return lowP;
     }
     
-    public List<Product> getOutOfStockProducts() {
-        return getLowStockProducts(0);
-    }
     
-    public boolean restockProduct(int productId, int quantity) {
-        Product product = productDAO.getProductById(productId);
-        if (product != null) {
-            int newQuantity = product.getQuantity() + quantity;
-            return productDAO.updateProductStock(productId, newQuantity);
+    public List<Product> getOutOfStockProducts (){ return getLowStockProducts(0);}
+    // just call above function witgh th = 0 ->
+    
+    public boolean restockProduct(int pId, int q){
+        Product p = productDAO.getProductById(pId);
+        if(p!=null) {return productDAO.updateProductStock(pId, p.getQuantity()+ q);
         }
         return false;
+    
     }
     
     public double getTotalInventoryValue() {
-        List<Product> products = productDAO.getAllProducts();
-        double totalValue = 0.0;
+        List<Product> ps = productDAO.getAllProducts();
+        double t = 0.0;
+        for (Product p: ps){
+            t += p.getPrice() * p.getQuantity();
+            
         
-        for (Product product : products) {
-            totalValue += product.getPrice() * product.getQuantity();
         }
-        
-        return totalValue;
-    }
+        return t;
+}
     
     public String getInventorySummary() {
-        List<Product> products = productDAO.getAllProducts();
-        int totalProducts = products.size();
-        int totalItems = 0;
-        double totalValue = 0.0;
+        List<Product> ps = productDAO.getAllProducts();
+        int totalP = ps.size();
+        int tItems  = 0;
+        double tValue = 0.0;
         int lowStockCount = 0;
         
-        for (Product product : products) {
-            totalItems += product.getQuantity();
-            totalValue += product.getPrice() * product.getQuantity();
-            if (product.getQuantity() < 10) {
-                lowStockCount++;
+        for (Product p: ps) {
+            tItems += p.getQuantity();
+            tValue += p.getPrice() * p.getQuantity();
+            if(p.getQuantity() < 10 ){ // replace by input variable if needed
+                lowStockCount ++;
             }
         }
+        return String.format("Inventory Summary : " + "total Products: %d\n" + "total Items: %d\n " + "total value: $%.2f\n" 
+                + "Low Stock Items : %d", totalP, tItems, tValue, lowStockCount );
         
-        return String.format("Inventory Summary:\n" +
-                           "Total Products: %d\n" +
-                           "Total Items: %d\n" +
-                           "Total Value: $%.2f\n" +
-                           "Low Stock Items: %d",
-                           totalProducts, totalItems, totalValue, lowStockCount);
     }
+    
+
 }

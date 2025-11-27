@@ -1,72 +1,87 @@
 package com.warehouse.models;
-
-import java.util.*;
+import java.util.*; // what for ?
 
 public class Order {
+
     private int orderId;
     private int customerId;
-    private Map<Product, Integer> productList;
+    private Map<Product, Integer> productList; // An Order has Product with varable amount --
     private double totalAmount;
-    private String status;
-    private Date date;
+    private String status; // Peding, Procesing, Shiped, Dileverd 
+    private Date date; // date of creation
 
-    public Order(int orderId, int customerId, Date date) {
-        this.orderId = orderId;
-        this.customerId = customerId;
+    public Order(int id, int cusId, Date date){
+        this.orderId = id;
+        this.customerId = cusId;
         this.date = date;
         this.productList = new HashMap<>();
-        this.totalAmount = 0.0;
-        this.status = "Pending";
+        this.totalAmount = 0.0; // nothing first
+       this.status = "Pending";
     }
-
-    // Getters and Setters
-    public int getOrderId() { return orderId; }
-    public int getCustomerId() { return customerId; }
-    public Map<Product, Integer> getProductList() { return productList; }
-    public double getTotalAmount() { return totalAmount; }
-    public String getStatus() { return status; }
-    public Date getDate() { return date; }
-
-    // Methods from UML
-    public void addItem(Product product, int quantity) {
-        productList.put(product, productList.getOrDefault(product, 0) + quantity);
-        totalAmount += product.getPrice() * quantity;
-        System.out.println("Added " + quantity + " of " + product.getName() + " to order #" + orderId);
+    
+    public int getOrderId() {return orderId;}
+    public int getCustomerId() {return this.customerId;}
+    public Map<Product, Integer> getProductList() {return this.productList;}
+    public double getTotalAmount() {return totalAmount;}
+    public String getStatus() {return this.status;}
+    public Date getDate() {return date;}
+    
+    
+    public void addItem(Product p, int q){
+        productList.put( p , productList.getOrDefault(p ,0) + q);
+        // if Product is included in the proDuctList then take product quantity 
+        // else not in list tben 0
+        this.totalAmount += p.getPrice() * q;
+        System.out.print("Added product " + p.getName() + " - quantity: " + q + " to order's id: " + orderId);
     }
-
-    public void removeItem(int productId) {
-        Product toRemove = null;
-        for (Map.Entry<Product, Integer> entry : productList.entrySet()) {
-            if (entry.getKey().getProductId() == productId) {
-                toRemove = entry.getKey();
-                totalAmount -= entry.getKey().getPrice() * entry.getValue();
-                break;
+    
+    public void removeItem(int pId){
+        Product p = null;
+        for(Map.Entry<Product, Integer> item : productList.entrySet()){ // loop through every item in List
+            if(item.getKey().getProductId() == pId) { // if itemId = Pid then remove
+                p = item.getKey(); // get the product object 
+                totalAmount -= p.getPrice() * item.getValue(); // subtract from total order
             }
         }
-        if (toRemove != null) {
-            productList.remove(toRemove);
-            System.out.println("Removed product ID: " + productId + " from order #" + orderId);
+        if(p != null){
+            productList.remove(p); // actaul remove
+            System.out.print("Rmv p Id " + pId + " - order# " + orderId);
         }
+      }
+    
+    public void processOrder(){
+        this.status = "Processed"; 
+        // Do some notification here to related actorss
+        System.out.println("Proccesing OrderID = " + orderId);
     }
-
-    public void processOrder() {
-        this.status = "Processed";
-        System.out.println("Order #" + orderId + " processed.");
-    }
-
+    
     public void cancelOrder() {
-        this.status = "Cancelled";
-        System.out.println("Order #" + orderId + " cancelled.");
+        this.status = "Canceled";
+                // Do some notification here to related actorss
+        System.out.println("Cancelling orderr#" + orderId );
+    }
+    
+    public void updateStatus(String st) {
+        this.status = st;
+        System.out.println("Order #" +orderId+ "changged to status of: " + status);
+    }
+    
+    @Override 
+    
+        public String  toString() 
+     {
+        return String.format("OrderId #%d, CusId #%d, total = %.2f, %s, %d items", orderId, customerId, totalAmount, status, productList.size());
     }
 
-    public void updateStatus(String status) {
-        this.status = status;
-        System.out.println("Order #" + orderId + " status updated to: " + status);
-    }
+    
+    
+    
+    
 
-    @Override
-    public String toString() {
-        return String.format("Order{id=%d, customerId=%d, total=%.2f, status='%s', items=%d}", 
-                           orderId, customerId, totalAmount, status, productList.size());
-    }
-}
+
+       
+        
+        
+        
+        
+        }

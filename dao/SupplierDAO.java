@@ -7,9 +7,9 @@ import java.sql.*;
 
 public class SupplierDAO {
     public boolean addSupplier (Supplier s){
-        String sql = "insert into suppliers (name, contact_info, address values (?,?,?)";
+        String sql = "insert into suppliers (name, contact_info, address) values (?,?,?)";
            try(Connection c = DatabaseConfig.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql)){
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS )){
         ps.setString(1, s.getName());
         ps.setString(2, s.getContactInfo());
         ps.setString(3, s.getAddress());
@@ -19,8 +19,10 @@ public class SupplierDAO {
              try (ResultSet gk = ps.getGeneratedKeys()) {
                     if(gk.next()){
                     s.setPersonId(gk.getInt(1));
+                    System.out.println("Success in SDAO - New supplier ID: " + gk.getInt(1));
 
                     }
+                    System.out.println("Success in SDAO");
                     return true;
                    }
 
@@ -31,7 +33,11 @@ public class SupplierDAO {
 
 
         }
-        catch (SQLException e){} // output ..
+        catch (SQLException e){
+            System.out.println("Failed SDAO");
+             System.out.println("Failed SDAO: " + e.getMessage());
+        e.printStackTrace(); // This will show the exact error
+        } 
             return false;
         
     }
@@ -60,6 +66,42 @@ public class SupplierDAO {
                     }
         return ss;
         }
+    
+     public boolean updateSupplier(Supplier supplier) {
+        String sql = "UPDATE suppliers SET name = ?, contact_info = ?, address = ? WHERE supplier_id = ?";
+        
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, supplier.getName());
+            pstmt.setString(2, supplier.getContactInfo());
+            pstmt.setString(3, supplier.getAddress());
+            pstmt.setInt(4, supplier.getPersonId());
+            
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error updating supplier: " + e.getMessage());
+            return false;
+        }
+    }
+     
+    public boolean deleteSupplier(int supplierId) {
+        String sql = "DELETE FROM suppliers WHERE supplier_id = ?";
+        
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, supplierId);
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Error deleting supplier: " + e.getMessage());
+            return false;
+        }
+    }
     
         public Supplier getSupplierById(int sid) {
             String sql = "select * from supplier where supplier_id = ? ";
@@ -98,3 +140,12 @@ public class SupplierDAO {
 
 
       
+
+
+
+
+
+
+
+
+

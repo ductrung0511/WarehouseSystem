@@ -17,6 +17,6 @@ package com.warehouse.models;
 
     @Override
 public String toString(){
-       return  String.format(" Customer has id:%d", personId);
+       return  String.format("CID %d - %s", personId, name);
     }
 }

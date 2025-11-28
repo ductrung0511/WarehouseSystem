@@ -128,7 +128,7 @@ String sql = "insert into products (name, category, quantity, price, expiry_date
     // Update eproduct information
     public boolean updateProduct(Product p){
     
-        String sql = "update products set name = ?, category = ?, quantity=?, expiry_date = ?, supplier_id = ? where product_id = ?";
+        String sql = "update products set name = ?, category = ?, quantity=?, price  = ?,  expiry_date = ?, supplier_id = ? where product_id = ?";
         try(Connection c = DatabaseConfig.getConnection();
         PreparedStatement ps = c.prepareStatement(sql);){
         
@@ -185,7 +185,7 @@ String sql = "insert into products (name, category, quantity, price, expiry_date
     
         public boolean deleteProduct(int pId){
     
-        String sql = "delete from products where    where product_id = ?";
+        String sql = "delete from products     where product_id = ?";
         try(Connection c = DatabaseConfig.getConnection();
         PreparedStatement ps = c.prepareStatement(sql);){
         

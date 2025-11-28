@@ -19,7 +19,7 @@ public class Supplier  extends Person {
     }
     
     @Override 
-    public String toString() {return "Supplier #id is : " + personId;}
+    public String toString() {return "Supplier: " + name;}
     
 
 }

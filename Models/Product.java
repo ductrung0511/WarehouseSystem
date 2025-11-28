@@ -22,6 +22,15 @@ public class Product
         this.supplierId = sId;
         this.price = price;
     }
+    public Product(int pId, String n, String cat, int q, double price){
+        this.productId = pId;
+        this.name = n;
+        this.category = cat;
+        this.quantity = q;
+        this.expiryDate = new Date();
+        this.supplierId = 1; // Default supplier
+        this.price = price;
+    }
     
     // Getters Fucntions;
     public int getProductId () {return productId;}
@@ -53,7 +62,7 @@ public class Product
   
   @Override // why override ?
   public String toString() {
-    return String.format("Product id = %d", productId );
+    return String.format("PID %d - %s ", productId, name );
   }
 
 

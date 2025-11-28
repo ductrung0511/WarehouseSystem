@@ -26,7 +26,7 @@ public class Order {
     public String getStatus() {return this.status;}
     public Date getDate() {return date;}
     
-    
+    public void setOrderId(int id) {this.orderId = id;}
     public void addItem(Product p, int q){
         productList.put( p , productList.getOrDefault(p ,0) + q);
         // if Product is included in the proDuctList then take product quantity 

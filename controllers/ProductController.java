@@ -98,4 +98,35 @@ public class ProductController {
         }
         return warehouseService.getProductById(productId);
     }
+     // Add these new methods for update and delete
+    public boolean updateProduct(int productId, String name, String category, int quantity, double price, Date expiryDate, int supplierId) {
+        if (productId <= 0) {
+            throw new IllegalArgumentException("Product ID must be positive");
+        }
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product name cannot be empty");
+        }
+        if (category == null || category.trim().isEmpty()) {
+            throw new IllegalArgumentException("Category cannot be empty");
+        }
+        if (quantity < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative");
+        }
+        if (price < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
+        if (supplierId <= 0) {
+            throw new IllegalArgumentException("Supplier ID must be positive");
+        }
+        
+        Product product = new Product(productId, name, category, quantity, price, expiryDate, supplierId);
+        return warehouseService.updateProduct(product);
+    }
+    
+    public boolean deleteProduct(int productId) {
+        if (productId <= 0) {
+            throw new IllegalArgumentException("Product ID must be positive");
+        }
+        return warehouseService.deleteProduct(productId);
+    }
 }

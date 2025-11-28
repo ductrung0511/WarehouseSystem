@@ -28,6 +28,7 @@ public class  PurchaseOrder
     public double  getTotalCost () { return totalCost;}
     public Date getOrderDate() {return orderDate; }
     public String getStatus() {return status;}
+    public void updateTotalCost( double cost) {this.totalCost = cost; }
     
     public void cancelPO() { this.status = "Cancelled"; 
     } // Do st else here ... ?

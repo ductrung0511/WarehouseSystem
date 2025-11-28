@@ -156,4 +156,25 @@ public class WarehouseService {
         }
         return false;
     }
+
+
+    public boolean addSupplier(Supplier supplier) {
+        System.out.print("IN WAREHOUSE SERVICES");
+        return supplierDAO.addSupplier(supplier);
+    }
+
+    public boolean updateSupplier(Supplier supplier) {
+        return supplierDAO.updateSupplier(supplier);
+    }
+
+    public Supplier getSupplierById(int supplierId) {
+        return supplierDAO.getSupplierById(supplierId);
+}
+    
+    public boolean updateProduct(Product p){
+        return productDAO.updateProduct(p);
+    }
+    public boolean deleteProduct(int Pid){
+        return productDAO.deleteProduct(Pid);
+    }
 }

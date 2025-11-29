@@ -11,8 +11,8 @@ public class WarehouseDAO{
         String sql = " insert into warehouses (name, location, capacity, current_stock ) values (?,?,?,?)";
 
     try(Connection c = DatabaseConfig.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql)){
-    ps.setString(1, w.getLocation());
+                PreparedStatement ps = c.prepareStatement(sql,  Statement.RETURN_GENERATED_KEYS)){
+    ps.setString(1, w.getName());
     ps.setString(2, w.getLocation());
     ps.setInt(3, w.getCapacity());
     ps.setInt(4, w.getCurrentStock());
@@ -32,7 +32,9 @@ public class WarehouseDAO{
         
     
     }
-    catch (SQLException e){} // output ..
+    catch (SQLException e){
+    System.out.println(e.getMessage());
+    } // output ..
         return false;
     }
     
@@ -56,6 +58,7 @@ public class WarehouseDAO{
                         rs.getString("location"),
                         rs.getInt("capacity")
                 );
+                s.setCurrentStock(rs.getInt("current_stock"));
                 warehouses.add(s);
         }
             } catch(SQLException e) {
@@ -66,9 +69,11 @@ public class WarehouseDAO{
         
     }
     
+    
+    
     public Warehouse getWarehouseById(int id){
         
-        String sql = "select * from warehouses where wahouse_id = ? ";
+        String sql = "select * from warehouses where warehouse_id = ? ";
             Warehouse w = null;
             
             try(Connection c = DatabaseConfig.getConnection();
@@ -88,6 +93,8 @@ public class WarehouseDAO{
             
         }
         catch (SQLException e ) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             
             }
             
@@ -99,7 +106,7 @@ public class WarehouseDAO{
     
     // Product inserted to warehouse with ids and quantity to warehouse-p relationship
     public boolean addProductToWarehouse( int wId, int pId, int q) {
-        String sql = "insert into warehouse_prroducts (warehouse_id, product_id, quantity) values (?, ?, ?) "
+        String sql = "insert into warehouse_products (warehouse_id, product_id, quantity) values (?, ?, ?) "
                 + "on duplicate key update quantity = quantity + ?";
         
            try(Connection c = DatabaseConfig.getConnection();
@@ -117,7 +124,10 @@ public class WarehouseDAO{
         
     
     }
-    catch (SQLException e){} // output ..
+    catch (SQLException e){
+        System.out.println(e.getMessage());
+        e.printStackTrace();
+    } // output ..
     return false;
     }
     
@@ -158,7 +168,7 @@ public class WarehouseDAO{
     
     private void updateWarehouseStock(int wId){
         String sql = "update warehouses set current_stock = "
-                + "(select coalesce(sum(quantity), 0) from warehouse_products where warehouse_id ?)"
+                + "(select coalesce(sum(quantity), 0) from warehouse_products where warehouse_id = ?)"
                 // Coalesce to get either sum or 0 ...
                 + "where warehouse_id = ?";
         
@@ -172,7 +182,9 @@ public class WarehouseDAO{
 
 
         }
-        catch (SQLException e){} // output ..
+        catch (SQLException e){
+        System.out.println(e.getMessage());
+        } // output ..
                 
         
     }

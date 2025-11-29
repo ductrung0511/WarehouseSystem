@@ -26,6 +26,9 @@ public class WarehouseService {
     public List<Product> getAllProducts() {
         return productDAO.getAllProducts();
     }
+    public boolean addWarehouse(Warehouse w) {
+        return warehouseDAO.addWarehouse(w);
+    }
     
     public List<Product> getProductsByCategory(String category) {
         return productDAO.getProductsByCategory(category);

@@ -12,6 +12,7 @@ public class Product
     private Date expiryDate;
     private double price;
     private int quantity;
+//    private Date createdDate;
             
     public Product(int pId, String n, String cat, int q, double price, Date eD, int sId){
         this.productId = pId;

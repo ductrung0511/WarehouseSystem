@@ -8,11 +8,10 @@ import com.warehouse.views.products.ProductSearchView;
 import com.warehouse.controllers.ProductController;
 
 import com.warehouse.views.warehouse.WarehouseListView;
-import com.warehouse.views.warehouse.TransferView;
 import com.warehouse.views.warehouse.WarehouseReportView;
 
 import com.warehouse.views.orders.OrderListView;
-import com.warehouse.views.orders.OrderStatusView;
+import com.warehouse.views.orders.OrderStatusView; //
 import com.warehouse.views.orders.OrderCancelView;
 
 import com.warehouse.views.suppliers.SupplierListView;
@@ -34,10 +33,8 @@ public class MainApplicationView extends JFrame {
     
     // Warehouse cards
     public static final String CARD_WAREHOUSE = "WAREHOUSE";
-    public static final String CARD_TRANSFER = "TRANSFER";
     public static final String CARD_WAREHOUSE_REPORT = "WAREHOUSE_REPORT";
     
-    // Order cards - FIXED: Removed duplicate CARD_ORDERS
     public static final String CARD_ORDERS = "ORDERS";
     public static final String CARD_ORDER_STATUS = "ORDER_STATUS";
     public static final String CARD_ORDER_CANCEL = "ORDER_CANCEL";
@@ -54,7 +51,6 @@ public class MainApplicationView extends JFrame {
     private final ProductSearchView productSearchView;
     
     private final WarehouseListView warehouseListView;
-    private final TransferView transferView;
     private final WarehouseReportView warehouseReportView;
     
     private final OrderListView orderListView;
@@ -80,7 +76,6 @@ public class MainApplicationView extends JFrame {
         productSearchView = new ProductSearchView(productController);
         
         warehouseListView = new WarehouseListView();
-        transferView = new TransferView();
         warehouseReportView = new WarehouseReportView();
         
         orderListView = new OrderListView();
@@ -121,7 +116,6 @@ public class MainApplicationView extends JFrame {
         
         // Warehouse views
         mainPanel.add(warehouseListView, CARD_WAREHOUSE);
-        mainPanel.add(transferView, CARD_TRANSFER);
         mainPanel.add(warehouseReportView, CARD_WAREHOUSE_REPORT);
         
         // Order views
@@ -150,15 +144,6 @@ public class MainApplicationView extends JFrame {
             dashboardView.refresh();
         }
         
-//        // Refresh order list when navigating to orders
-//        if (CARD_ORDERS.equals(cardName)) {
-//            orderListView.loadOrders();
-//        }
-//        
-//        // Refresh warehouse list when navigating to warehouse
-//        if (CARD_WAREHOUSE.equals(cardName)) {
-//            warehouseListView.loadWarehouses();
-//        }
     }
 
     // Public method to allow external navigation
@@ -187,10 +172,7 @@ public class MainApplicationView extends JFrame {
     public WarehouseListView getWarehouseListView() {
         return warehouseListView;
     }
-    
-    public TransferView getTransferView() {
-        return transferView;
-    }
+
     
     public WarehouseReportView getWarehouseReportView() {
         return warehouseReportView;

@@ -36,7 +36,7 @@ public class WarehouseListView extends JPanel {
     private void initializeComponents() {
         // Main split pane for warehouse list and products
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(400);
+        splitPane.setDividerLocation(500);
         splitPane.setResizeWeight(0.5);
 
         // Left panel - Warehouse list
@@ -87,16 +87,19 @@ public class WarehouseListView extends JPanel {
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         
         JButton refreshButton = new JButton("Refresh");
+        JButton addWarehouseButton = new JButton("Add Warehouse"); // NEW BUTTON
         JButton addProductButton = new JButton("Add Product to Warehouse");
         JButton generateReportButton = new JButton("Generate Report");
         
         refreshButton.addActionListener(e -> loadWarehouses());
+        addWarehouseButton.addActionListener(e -> showAddWarehouseDialog()); // NEW ACTION
         addProductButton.addActionListener(e -> showProductAssignmentDialog());
         generateReportButton.addActionListener(e -> generateWarehouseReport());
         
         controlPanel.add(refreshButton);
         controlPanel.add(addProductButton);
         controlPanel.add(generateReportButton);
+        controlPanel.add(addWarehouseButton); // ADDED TO PANEL
         
         return controlPanel;
     }
@@ -165,7 +168,18 @@ public class WarehouseListView extends JPanel {
         }
         
         Warehouse selectedWarehouse = warehouses.get(selectedRow);
-//        new ProductAssignmentView(this, warehouseController, selectedWarehouse, this::loadWarehouses);
+        ProductAssignmentView view = new ProductAssignmentView(SwingUtilities.getWindowAncestor(this), warehouseController, selectedWarehouse, this::loadWarehouses);
+        view.setVisible(true);
+    }
+    
+        // NEW METHOD: Show dialog to add new warehouse
+    private void showAddWarehouseDialog() {
+        WarehouseFormView form = new WarehouseFormView(
+            SwingUtilities.getWindowAncestor(this),
+            warehouseController,
+            this::loadWarehouses
+        );
+        form.setVisible(true);
     }
 
     private void generateWarehouseReport() {

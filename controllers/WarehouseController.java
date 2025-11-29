@@ -92,4 +92,24 @@ public class WarehouseController {
         }
         return inventoryService.restockProduct(productId, quantity);
     }
+    //    public boolean addWarehouse(String name, ... )
+    // Add this method to WarehouseController.java
+    public boolean addWarehouse(String name, String location, int capacity) {
+        // Input validation
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Warehouse name cannot be empty");
+        }
+        if (location == null || location.trim().isEmpty()) {
+            throw new IllegalArgumentException("Location cannot be empty");
+        }
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Capacity must be positive");
+        }
+
+        // Create Warehouse object
+        Warehouse warehouse = new Warehouse(0, name, location, capacity);
+
+        // Call Service with Warehouse object
+        return warehouseService.addWarehouse(warehouse);
+    }
 }

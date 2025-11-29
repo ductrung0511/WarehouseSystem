@@ -10,7 +10,7 @@ public boolean addProduct(Product p) {
 String sql = "insert into products (name, category, quantity, price, expiry_date, supplier_id) values (?,?,?,?,?,?)";
 
     try(Connection c = DatabaseConfig.getConnection();
-                PreparedStatement ps = c.prepareStatement(sql)){
+                PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
     ps.setString(1, p.getName());
     ps.setString(2, p.getCategory());
     ps.setInt(3, p.getQuantity());
@@ -38,7 +38,11 @@ String sql = "insert into products (name, category, quantity, price, expiry_date
         
     
     }
-    catch (SQLException e){} // output ..
+    catch (SQLException e){
+    System.out.println(e.getMessage());
+    e.printStackTrace();
+    
+    } // output ..
         return false;
     
     

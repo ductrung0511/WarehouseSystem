@@ -140,7 +140,7 @@ public class OrderStatusView extends JPanel {
                 order.getDate(),
                 String.format("$%.2f", order.getTotalAmount()),
                 getStatusWithIcon(order.getStatus()),
-                new java.util.Date() // In real app, this would come from order object
+                new java.util.Date() // Should come from order object - but for demo just like this ...
             });
         }
     }

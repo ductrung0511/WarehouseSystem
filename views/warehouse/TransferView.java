@@ -1,3 +1,4 @@
+// Depreciated - Too complicated to implement 
 package com.warehouse.views.warehouse;
 
 import com.warehouse.controllers.WarehouseController;

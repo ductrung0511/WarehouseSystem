@@ -19,8 +19,9 @@ public Warehouse(int Id, String na, String lo, int ca) {
 this.warehouseId = Id;
 this.name = na;
 // jfkdsljk
+this.location = lo;
 this.capacity = ca;
-this.currentStock = 0; // no at firest;
+this.currentStock = 0; // no at first;
 this.products = new ArrayList<>();
 
 }
@@ -86,6 +87,7 @@ public int checkAvailability(int pId) {
   return 0;
 }
 public void setWarehouseId(int id) {this.warehouseId = id;}
+public void setCurrentStock(int s) {this.currentStock = s;}
 public void generateReport() {
 // Not needed, only when return data is needed
 }
@@ -93,7 +95,7 @@ public void generateReport() {
 @Override
 public String  toString () 
 {
-return "Ware House id %d" + warehouseId; // done
+return "WID %d " + warehouseId  + " " + name; // done
 }
 
 

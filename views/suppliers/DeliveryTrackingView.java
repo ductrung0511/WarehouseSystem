@@ -48,16 +48,16 @@ public class DeliveryTrackingView extends JPanel {
             int approvedOrders = purchaseOrderController.getApprovedOrdersCount();
             int completedOrders = purchaseOrderController.getCompletedOrdersCount();
             
-            headerPanel.add(createStatCard("Total Orders", String.valueOf(totalOrders), Color.BLUE));
-            headerPanel.add(createStatCard("Pending", String.valueOf(pendingOrders), Color.ORANGE));
-            headerPanel.add(createStatCard("Approved", String.valueOf(approvedOrders), Color.CYAN));
-            headerPanel.add(createStatCard("Completed", String.valueOf(completedOrders), Color.GREEN));
+            headerPanel.add(createStatCard("Total Orders", String.valueOf(totalOrders), Color.BLACK));
+            headerPanel.add(createStatCard("Pending", String.valueOf(pendingOrders), Color.BLACK));
+            headerPanel.add(createStatCard("Approved", String.valueOf(approvedOrders), Color.BLACK));
+            headerPanel.add(createStatCard("Completed", String.valueOf(completedOrders), Color.BLACK));
             
         } catch (Exception e) {
-            headerPanel.add(createStatCard("Total Orders", "0", Color.BLUE));
-            headerPanel.add(createStatCard("Pending", "0", Color.ORANGE));
-            headerPanel.add(createStatCard("Approved", "0", Color.CYAN));
-            headerPanel.add(createStatCard("Completed", "0", Color.GREEN));
+            headerPanel.add(createStatCard("Total Orders", "0", Color.BLACK));
+            headerPanel.add(createStatCard("Pending", "0", Color.BLACK));
+            headerPanel.add(createStatCard("Approved", "0", Color.BLACK));
+            headerPanel.add(createStatCard("Completed", "0", Color.BLACK));
         }
         
         return headerPanel;
@@ -132,11 +132,6 @@ private void updateDeliveriesTable() {
         int totalQuantity = order.getProductList().values().stream()
                 .mapToInt(Integer::intValue)
                 .sum();
-        
-        
-        
-                                System.out.println(order.getTotalCost() + "Costy");
-
         
         deliveriesTable.addRow(new Object[]{
             "PO-" + order.getPoId(),

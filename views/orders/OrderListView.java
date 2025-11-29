@@ -34,7 +34,7 @@ public class OrderListView extends JPanel {
         leftPanel.setBorder(BorderFactory.createTitledBorder("Order History"));
         
         // Orders table
-        String[] orderColumns = {"Order ID", "Customer ID", "Order Date", "Total Amount", "Status", "Items Count"};
+        String[] orderColumns = {"Order ID", "Customer ID", "Order Date", "Total Amount", "Status", "Items Count", "Last Update"};
         ordersTable = new DataTable(orderColumns);
         ordersTable.setColumnWidth(0, 80);
         ordersTable.setColumnWidth(1, 100);
@@ -116,6 +116,17 @@ public class OrderListView extends JPanel {
         
         return actionsPanel;
     }
+    
+    private String getStatusWithIcon(String status) {
+        return switch (status) {
+            case "Pending" -> "⏳ " + status;
+            case "Processing" -> "🔄 " + status;
+            case "Shipped" -> "🚚 " + status;
+            case "Delivered" -> "✅ " + status;
+            case "Cancelled" -> "❌ " + status;
+            default -> status;
+        };
+    }
 
     private void loadOrders() {
         try {
@@ -129,8 +140,10 @@ public class OrderListView extends JPanel {
                     order.getCustomerId(),
                     order.getDate(),
                     String.format("$%.2f", order.getTotalAmount()),
-                    order.getStatus(),
-                    order.getProductList().size()
+                    getStatusWithIcon(order.getStatus()) + order.getStatus() , // status
+                    order.getProductList().size(),
+                    new java.util.Date() // Should come from order object - but for demo just like this ...
+
                 });
             }
             
@@ -161,7 +174,9 @@ public class OrderListView extends JPanel {
                     order.getCustomerId(),
                     order.getDate(),
                     String.format("$%.2f", order.getTotalAmount()),
-                    order.getStatus(),
+//                    order.getStatus(), // Get Status
+                     getStatusWithIcon(order.getStatus()) + order.getStatus() , // status
+
                     order.getProductList().size()
                 });
             }

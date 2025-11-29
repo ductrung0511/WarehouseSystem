@@ -14,22 +14,21 @@ public class NavigationPanel extends JPanel {
 
         add(navButton("📊 Dashboard", "DASHBOARD", onNavigate));
         add(navButton("📦 Products", "PRODUCTS", onNavigate));
-        add(navButton("🔍 Search Products", "SEARCH", onNavigate));
+//        add(navButton("🔍 Search Products", "SEARCH", onNavigate));
         add(navButton("🛒 Orders (POS)", "ORDERS", onNavigate));
         
         add(navButton("🏭 Warehouses", "WAREHOUSE", onNavigate));
-        add(navButton("🔄 Transfers", "TRANSFER", onNavigate));
+//        add(navButton("🔄 Transfers", "TRANSFER", onNavigate));
         add(navButton("📋 Warehouse Reports", "WAREHOUSE_REPORT", onNavigate));
         
-        add(navButton("📋 Order History", "ORDERS", onNavigate));
-        add(navButton("🔄 Order Status", "ORDER_STATUS", onNavigate));
+//        add(navButton("🔄 Order Status", "ORDER_STATUS", onNavigate));
         add(navButton("❌ Cancel Orders", "ORDER_CANCEL", onNavigate));
         
         
 //        add(createSectionLabel("Suppliers"));
         add(navButton("🏢 Supplier List", "SUPPLIERS", onNavigate));
         add(navButton("📦 Purchase Orders", "PURCHASE_ORDERS", onNavigate));
-        add(navButton("🚚 Delivery Tracking", "DELIVERY_TRACKING", onNavigate));
+        add(navButton("🚚 PO Tracking", "DELIVERY_TRACKING", onNavigate));
         add(Box.createVerticalGlue());
         
         // Add some bottom buttons

@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProductListView extends JPanel {
     private final ProductController productController;
@@ -92,24 +93,69 @@ public class ProductListView extends JPanel {
         JButton refreshButton = new JButton("Refresh");
         
         // Add instruction label
-        JLabel instructionLabel = new JLabel("Double click to edit - Or Right click to select Edit or Delete Product");
+        JLabel instructionLabel = new JLabel("Double click | Right click");
         instructionLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
         instructionLabel.setForeground(Color.GRAY);
+        
+        JLabel instructionLabel2 = new JLabel(" Edit or Delete");
+        instructionLabel2.setFont(new Font("SansSerif", Font.ITALIC, 12));
+        instructionLabel2.setForeground(Color.GRAY);
         
         buttonPanel.add(addButton);
         buttonPanel.add(stockButton);
         buttonPanel.add(refreshButton);
-        buttonPanel.add(instructionLabel);
+        buttonPanel.add(instructionLabel);       
+        buttonPanel.add(instructionLabel2);
+
         
-        // Search panel
-        searchPanel = new SearchPanel();
-        searchPanel.setSearchListener(e -> performSearch());
+//        // Search panel
+//        searchPanel = new SearchPanel();
+//        JTextField searchField = new JTextField(20);
+//        JComboBox<String> searchType = new JComboBox<>(new String[]{
+//            "Name", "Category", "All"
+//        });
+//        searchPanel.add(searchField);
+//        searchPanel.setSearchListener(e -> performSearch(searchField.getText().trim(),
+//            (String) searchType.getSelectedItem()));
+//        
+//        searchField.addActionListener(e -> performSearch(
+//            searchField.getText().trim(),
+//            (String) searchType.getSelectedItem()
+//        ));
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        
+        JTextField searchField = new JTextField(20);
+        JComboBox<String> searchType = new JComboBox<>(new String[]{
+            "Name", "Category", "All"
+        });
+        JButton searchButton = new JButton("Search");
+        
+        searchPanel.add(searchField);
+        searchPanel.add(searchType);
+        searchPanel.add(searchButton);
+         // Search functionality
+        searchButton.addActionListener(e -> performSearch(
+            searchField.getText().trim(),
+            (String) searchType.getSelectedItem()
+        ));
+        
+        searchField.addActionListener(e -> performSearch(
+            searchField.getText().trim(),
+            (String) searchType.getSelectedItem()
+        ));
+        
+        // Results table
+        String[] columns = {"ID", "Name", "Category", "Stock", "Price", "Supplier", "status"};
+        
+        // Status label
+        JLabel statusLabel = new JLabel("Enter search terms to find products");
+        
+        add(searchPanel, BorderLayout.NORTH);
         
         topPanel.add(buttonPanel, BorderLayout.WEST);
         topPanel.add(searchPanel, BorderLayout.EAST);
         
         // Product table
-        String[] columns = {"ID", "Name", "Category", "Quantity", "Price", "Supplier"};
         productTable = new DataTable(columns);
         productTable.setColumnWidth(0, 60);  // ID
         productTable.setColumnWidth(1, 150); // Name
@@ -133,14 +179,19 @@ public class ProductListView extends JPanel {
             products = productController.getAllProducts();
             productTable.clearData();
             
+            
             for (Product product : products) {
+                String status = product.getQuantity() > 0 ? "In Stock" : "Out of Stock";
+                if (product.getQuantity() < 10) status = "Low Stock";
                 productTable.addRow(new Object[]{
                     product.getProductId(),
                     product.getName(),
                     product.getCategory(),
                     product.getQuantity(),
                     String.format("$%.2f", product.getPrice()),
-                    "Supplier " + product.getSupplierId()
+                    "Supplier " + product.getSupplierId(),
+                    status
+                    
                 });
             }
         } catch (Exception e) {
@@ -150,15 +201,65 @@ public class ProductListView extends JPanel {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    private void performSearch() {
-        String searchText = searchPanel.getSearchText();
-        String filterType = searchPanel.getFilterType();
-        
-        // Simple search implementation - can be enhanced later
-        loadProducts(); // For now, just refresh
+    
+        private String getStatusWithIcon(String status) {
+        return switch (status) {
+            case "Pending" -> "⏳ " + status;
+            case "Processing" -> "🔄 " + status;
+            case "Shipped" -> "🚚 " + status;
+            case "Delivered" -> "✅ " + status;
+            case "Cancelled" -> "❌ " + status;
+            default -> status;
+        };
     }
 
+    private void performSearch(String searchTerm, String searchType) {
+        if (products == null || products.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No products available to search.");
+            return;
+        }
+
+        productTable.clearData();
+
+        List<Product> filteredProducts = products.stream()
+            .filter(product -> matchesSearch(product, searchTerm, searchType))
+            .collect(Collectors.toList());
+
+        for (Product product : filteredProducts) {
+            String status = product.getQuantity() > 0 ? "In Stock" : "Out of Stock";
+            if (product.getQuantity() < 10) status = "Low Stock";
+
+            productTable.addRow(new Object[]{
+                product.getProductId(),
+                product.getName(),
+                product.getCategory(),
+                product.getQuantity(),
+                String.format("$%.2f", product.getPrice()),
+                status
+            });
+        }
+    }
+    
+    private boolean matchesSearch(Product product, String searchTerm, String searchType) {
+        if (searchTerm.isEmpty()) return true;
+        
+        String term = searchTerm.toLowerCase();
+        
+        switch (searchType) {
+            case "Name":
+                return product.getName().toLowerCase().contains(term);
+            case "Category":
+                return product.getCategory().toLowerCase().contains(term);
+            case "All":
+                return product.getName().toLowerCase().contains(term) ||
+                       product.getCategory().toLowerCase().contains(term) ||
+                       String.valueOf(product.getProductId()).contains(term);
+            default:
+                return true;
+        }
+    }
+
+    
     private void openProductForm() {
         ProductFormView form = new ProductFormView(
             SwingUtilities.getWindowAncestor(this),
